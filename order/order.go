@@ -135,7 +135,7 @@ func queryOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
 	batchNo := args[0]
 
-	orderQuery := fmt.Sprintf("{\"selector\":{\"batchNo\":{\"$regex\": %s },\"sort\":[{\"submitTime\":\"desc\"}],\"use_index\":[\"_design/orderDoc\",\"order\"]}", batchNo)
+	orderQuery := fmt.Sprintf("{\"selector\":{\"batchNo\":{\"$eq\": %s },\"use_index\":[\"_design/orderBatchNoDoc\",\"batchNo\"]}", batchNo)
 
 	orderIterator, err := stub.GetQueryResult(orderQuery)
 

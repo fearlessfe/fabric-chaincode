@@ -93,21 +93,21 @@ func TestGenerateQueryString(t *testing.T)  {
 	}
 }
 
-func TestUnmarshal(t *testing.T)  {
-	testMap := map[string]interface{}{
-		"shopId": "shopId",
-		"kindId": "kindId",
-		"goodsId": "goodsId",
-		"gsiStatus": "gsiStatus",
-		"gcStatus": "gcStatus",
-		"bookmark": "bookmark",
-		"pageSize": 20,
-	}
-	str, _ := json.Marshal(&testMap)
-	s := GoodsDetailList{}
-	_ = json.Unmarshal(str, &s)
-	t.Log(s)
-}
+//func TestUnmarshal(t *testing.T)  {
+//	testMap := map[string]interface{}{
+//		"shopId": "shopId",
+//		"kindId": "kindId",
+//		"goodsId": "goodsId",
+//		"gsiStatus": "gsiStatus",
+//		"gcStatus": "gcStatus",
+//		"bookmark": "bookmark",
+//		"pageSize": 20,
+//	}
+//	str, _ := json.Marshal(&testMap)
+//	s := GoodsDetailList{}
+//	_ = json.Unmarshal(str, &s)
+//	t.Log(s)
+//}
 
 func TestReg(t *testing.T)  {
 	str := "{\"a\":\"1\",\"b\":\"2\",\"c\":\"3\"}"

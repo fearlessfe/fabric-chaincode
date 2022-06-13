@@ -12,7 +12,6 @@ import (
 )
 
 type Goods struct {
-	ObjectType string `json:"docType"`
 	BatchNo string `json:"batchNo"` // 商品批次号
 	StockId string `json:"stockId"` // 商品库存编号，主键
 	GoodsName string `json:"goodsName"` // 商品名称
@@ -311,7 +310,9 @@ func queryFriendGoodsListByMap(stub shim.ChaincodeStubInterface, args []string) 
 	}
 
 	selectMap := map[string]interface{} {
-		"shopId": argStruct.ShopIdList,
+		"shopId": map[string]interface{}{
+			"$in": argStruct.ShopIdList,
+		},
 	}
 
 	if argStruct.GoodsName != "" {
