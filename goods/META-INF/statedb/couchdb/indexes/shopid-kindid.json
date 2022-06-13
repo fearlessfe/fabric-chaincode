@@ -1,0 +1,8 @@
+{
+  "index": {
+    "fields": ["shopId", "kindId", "storageTime"]
+  },
+  "ddoc": "goodsShopIdKindIdDoc",
+  "name": "goodsShopIdKindId",
+  "type": "json"
+}
