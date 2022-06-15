@@ -12,44 +12,40 @@ import (
 
 const (
 	ORDER_ID = "orderNo"
-	GOODS_ID = "stockId"
-
 )
 
 var ErrorNotFound = fmt.Sprint("record not found")
 
 type Order struct {
-	OrderNo string `json:"orderNo"`  // 订单号，主键
-	BatchNo string `json:"batchNo"`  // 批次
-	MarketNo string `json:"marketNo"`  // 市场编号
-	MarketName string `json:"marketName"` // 市场名称
-	GoodsName string `json:"goodsName"` // 商品名称
-	GoodsOrigin string `json:"goodsOrigin"` // 产地
-	GoodsId string `json:"goodsId"`  // 商品编号
-	Amount string `json:"amount"`  // 金额
-	Weight string `json:"weight"`  // 重量
-	SellerShopId string `json:"sellerShopId"`  // 商家摊位号
-	SellerShop string `json:"sellerShop"` // 摊位名称
-	SellerId string `json:"sellerId"` // 卖家id
-	Seller string `json:"seller"`  // 卖家名称
-	BuyerShopId string `json:"buyerShopId"` // 买家摊位id
-	BuyerShop string `json:"buyerShop"` // 买家名称
-	BuyerId string `json:"buyerId"` // 买家编号
-	Buyer string `json:"buyer"`  // 买家名称
+	OrderNo      string `json:"orderNo"`      // 订单号，主键
+	BatchNo      string `json:"batchNo"`      // 批次
+	MarketNo     string `json:"marketNo"`     // 市场编号
+	MarketName   string `json:"marketName"`   // 市场名称
+	GoodsName    string `json:"goodsName"`    // 商品名称
+	GoodsOrigin  string `json:"goodsOrigin"`  // 产地
+	GoodsId      string `json:"goodsId"`      // 商品编号
+	Amount       string `json:"amount"`       // 金额
+	Weight       string `json:"weight"`       // 重量
+	SellerShopId string `json:"sellerShopId"` // 商家摊位号
+	SellerShop   string `json:"sellerShop"`   // 摊位名称
+	SellerId     string `json:"sellerId"`     // 卖家id
+	Seller       string `json:"seller"`       // 卖家名称
+	BuyerShopId  string `json:"buyerShopId"`  // 买家摊位id
+	BuyerShop    string `json:"buyerShop"`    // 买家名称
+	BuyerId      string `json:"buyerId"`      // 买家编号
+	Buyer        string `json:"buyer"`        // 买家名称
 	GoodsStockId string `json:"goodsStockId"` // 商品库存编号
-	TranTime string `json:"tranTime"` // 交易时间
-	SubmitTime string `json:"submitTime"` // 提交时间
+	TranTime     string `json:"tranTime"`     // 交易时间
+	SubmitTime   string `json:"submitTime"`   // 提交时间
 }
 
 type Pagination struct {
 	Bookmark string `json:"bookmark"`
-	PageSize int32 `json:"pageSize"`
+	PageSize int32  `json:"pageSize"`
 }
 
 type Chaincode struct {
-
 }
-
 
 func (t Chaincode) Init(stub shim.ChaincodeStubInterface) peer.Response {
 	return shim.Success(nil)
@@ -90,6 +86,7 @@ func addOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	}
 	return shim.Success([]byte(stub.GetTxID()))
 }
+
 // orderNo 为主键来更新
 func updateOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
@@ -135,10 +132,9 @@ func queryOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 
 	batchNo := args[0]
 
-	orderQuery := fmt.Sprintf("{\"selector\":{\"batchNo\":{\"$eq\": %s },\"use_index\":[\"_design/orderBatchNoDoc\",\"batchNo\"]}", batchNo)
+	orderQuery := fmt.Sprintf("{\"selector\":{\"batchNo\":{\"$eq\": \"%s\" }},\"use_index\":[\"_design/orderBatchNoDoc\",\"batchNo\"]}", batchNo)
 
 	orderIterator, err := stub.GetQueryResult(orderQuery)
-
 
 	if err != nil {
 		return shim.Error(err.Error())
@@ -161,35 +157,10 @@ func queryOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 		buffer.WriteString(string(queryResponse.Value))
 		bArrayMemberAlreadyWritten = true
 	}
-	return shim.Success(buffer.Bytes())
-}
-
-
-func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorInterface, bookmark string) (*bytes.Buffer, error) {
-	var buffer bytes.Buffer
-	buffer.WriteString("{\"data\":[")
-
-	bArrayMemberAlreadyWritten := false
-	for resultsIterator.HasNext() {
-		queryResponse, err := resultsIterator.Next()
-		if err != nil {
-			return nil, err
-		}
-		// 首次不用加 "，"
-		if bArrayMemberAlreadyWritten == true {
-			buffer.WriteString(",")
-		}
-
-		// Record is a JSON object, so we write as-is
-		buffer.WriteString(string(queryResponse.Value))
-		bArrayMemberAlreadyWritten = true
+	if !bArrayMemberAlreadyWritten {
+		return shim.Error(ErrorNotFound)
 	}
-	buffer.WriteString("],")
-	buffer.WriteString("\"bookmark\":")
-	buffer.WriteString(bookmark)
-	buffer.WriteString("}")
-
-	return &buffer, nil
+	return shim.Success(buffer.Bytes())
 }
 
 func mergeStructAndMap(point interface{}, jsonMap map[string]string) interface{} {
@@ -203,37 +174,6 @@ func mergeStructAndMap(point interface{}, jsonMap map[string]string) interface{}
 		}
 	}
 	return point
-}
-
-func generateQueryString(equal map[string]string, regex map[string]string, sort map[string]string, index []string) (string, error) {
-	selectorMap := make(map[string]map[string]string)
-	for key, val := range equal {
-		selectorMap[key] = map[string]string{
-			"$eq": val,
-		}
-	}
-
-	for key, val := range regex {
-		selectorMap[key] = map[string]string{
-			"$regex": val,
-		}
-	}
-
-	queryMap := map[string]interface{}{
-		"selector": selectorMap,
-		"sort": []map[string]string{
-			sort,
-		},
-		"use_index": index,
-	}
-
-	query, err := json.Marshal(&queryMap)
-
-
-	if err != nil {
-		return "", err
-	}
-	return string(query), nil
 }
 
 func main() {

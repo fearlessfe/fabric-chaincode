@@ -12,47 +12,44 @@ import (
 )
 
 type Goods struct {
-	BatchNo string `json:"batchNo"` // 商品批次号
-	StockId string `json:"stockId"` // 商品库存编号，主键
-	GoodsName string `json:"goodsName"` // 商品名称
+	BatchNo     string `json:"batchNo"`     // 商品批次号
+	StockId     string `json:"stockId"`     // 商品库存编号，主键
+	GoodsName   string `json:"goodsName"`   // 商品名称
 	GoodsOrigin string `json:"goodsOrigin"` // 产地
-	MarketName string `json:"marketName"` // 市场名称
-	GoodsId string `json:"goodsId"`  // 商品编号
-	GoodsPic string `json:"goodsPic"` // 商品图片
-	KindId string `json:"kindId"` // 分类编号
-	KindName string `json:"kindName"` // 分类名称
-	Weight string `json:"weight"`  // 重量
-	Price string `json:"price"` // 单价
-	ShopId string `json:"shopId"` // 摊位编号
-	Amount string `json:"amount"` // 上架数量
-	StockNum string `json:"stockNum"` // 库存数量
-	IsSelf string `json:"isSelf"` // 0 非自产， 1 自产
-	FileName string `json:"fileName"` // 进货单
-	Desc string `json:"desc"` // 备注
+	MarketName  string `json:"marketName"`  // 市场名称
+	GoodsId     string `json:"goodsId"`     // 商品编号
+	GoodsPic    string `json:"goodsPic"`    // 商品图片
+	KindId      string `json:"kindId"`      // 分类编号
+	KindName    string `json:"kindName"`    // 分类名称
+	Weight      string `json:"weight"`      // 重量
+	Price       string `json:"price"`       // 单价
+	ShopId      string `json:"shopId"`      // 摊位编号
+	Amount      string `json:"amount"`      // 上架数量
+	StockNum    string `json:"stockNum"`    // 库存数量
+	IsSelf      string `json:"isSelf"`      // 0 非自产， 1 自产
+	FileName    string `json:"fileName"`    // 进货单
+	Desc        string `json:"desc"`        // 备注
 	StorageTime string `json:"storageTime"` // 入链时间
-	SubmitTime string `json:"submitTime"` // 提交时间
-	GsiStatus string `json:"gsiStatus"` // 上架状态 0 上架， 1下架
-	QcStatus string `json:"qcstatus"` // 0 未检测，1 合格， 2 不合格 3 复检合格 4 复检不合格
+	SubmitTime  string `json:"submitTime"`  // 提交时间
+	GsiStatus   string `json:"gsiStatus"`   // 上架状态 0 上架， 1下架
+	QcStatus    string `json:"qcstatus"`    // 0 未检测，1 合格， 2 不合格 3 复检合格 4 复检不合格
 }
 
-
 type PersonalGoodsRes struct {
-	KindId string `json:"kindId"` // 分类编号
+	KindId   string `json:"kindId"`   // 分类编号
 	KindName string `json:"kindName"` // 分类名称
-	Amount string `json:"amount"` // 上架数量
+	Amount   string `json:"amount"`   // 上架数量
 	StockNum string `json:"stockNum"` // 库存数量
 }
 
 type Pagination struct {
 	Bookmark string `json:"bookmark"`
-	PageSize int32 `json:"pageSize"`
+	PageSize int32  `json:"pageSize"`
 }
-
 
 var ErrorNotFound = fmt.Sprint("record not found")
 
 type GoodsContract struct {
-	
 }
 
 var orderContractName = "order"
@@ -95,6 +92,7 @@ func (t GoodsContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return shim.Error("unsupported method " + fn)
 	}
 }
+
 // stockId 为主键
 func addGoods(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	if len(args) != 1 {
@@ -173,9 +171,8 @@ func queryGoodsShopIdAndKindName(stub shim.ChaincodeStubInterface, args []string
 	index := []string{"_design/goodsShopIdDoc", "goodsShopId"}
 	query, err := generateQueryString(equal, reg, sort, index)
 
-
 	if err != nil {
-		return shim.Error("failed to generate query string:"+ err.Error())
+		return shim.Error("failed to generate query string:" + err.Error())
 	}
 
 	resultsIterator, responseMetadata, err := stub.GetQueryResultWithPagination(query, int32(pageSize), bookmark)
@@ -204,7 +201,7 @@ func queryGoodsShopIdAndKindName(stub shim.ChaincodeStubInterface, args []string
 	}
 	nextBookMark := responseMetadata.Bookmark
 	res := map[string]interface{}{
-		"data": data,
+		"data":     data,
 		"bookmark": nextBookMark,
 	}
 	resStr, err := json.Marshal(&res)
@@ -216,11 +213,11 @@ func queryGoodsShopIdAndKindName(stub shim.ChaincodeStubInterface, args []string
 
 type GoodsDetailList struct {
 	Pagination
-	ShopId string `json:"shopId"`
-	KindId string `json:"kindId"`
-	GoodsId string `json:"goodsId"`
+	ShopId    string `json:"shopId"`
+	KindId    string `json:"kindId"`
+	GoodsId   string `json:"goodsId"`
 	GsiStatus string `json:"gsiStatus"`
-	GcStatus string `json:"gcStatus"`
+	GcStatus  string `json:"gcStatus"`
 }
 
 // 根据 shopId 和 kindId 查 goods， 可选字段精准匹配
@@ -265,9 +262,8 @@ func queryGoodsDetailByMap(stub shim.ChaincodeStubInterface, args []string) peer
 
 	query, err := generateQueryString(equal, reg, sort, index)
 
-
 	if err != nil {
-		return shim.Error("failed to generate query string:"+ err.Error())
+		return shim.Error("failed to generate query string:" + err.Error())
 	}
 
 	resultsIterator, responseMetadata, err := stub.GetQueryResultWithPagination(query, argStruct.PageSize, argStruct.Bookmark)
@@ -289,7 +285,7 @@ func queryGoodsDetailByMap(stub shim.ChaincodeStubInterface, args []string) peer
 type FriendGoodsParam struct {
 	Pagination
 	ShopIdList []string `json:"shopIdList"`
-	GoodsName string `json:"goodsName"`
+	GoodsName  string   `json:"goodsName"`
 }
 
 // shopIdList [] 好友shopId
@@ -309,7 +305,7 @@ func queryFriendGoodsListByMap(stub shim.ChaincodeStubInterface, args []string) 
 		return shim.Error("failed to unmarshal argStruct:" + err.Error())
 	}
 
-	selectMap := map[string]interface{} {
+	selectMap := map[string]interface{}{
 		"shopId": map[string]interface{}{
 			"$in": argStruct.ShopIdList,
 		},
@@ -322,7 +318,7 @@ func queryFriendGoodsListByMap(stub shim.ChaincodeStubInterface, args []string) 
 	}
 
 	queryMap := map[string]interface{}{
-		"sort":[]map[string]string{{"storageTime":"desc"}},
+		"sort": []map[string]string{{"storageTime": "desc"}},
 	}
 	queryMap["use_index"] = []string{"_design/goodsShopIdDoc", "goodsShopId"}
 	queryMap["selector"] = selectMap
@@ -363,12 +359,12 @@ func updateGoodsAmount(stub shim.ChaincodeStubInterface, args []string) peer.Res
 		return shim.Error("stockId, amount and updateType is required")
 	}
 	if updateType != "0" && updateType != "1" {
-		return shim.Error("updateType should be 0 or 1, get "+ updateType)
+		return shim.Error("updateType should be 0 or 1, get " + updateType)
 	}
 	amount, err := strconv.Atoi(amountStr)
 
 	if err != nil {
-		return shim.Error("failed to get amount"+ err.Error())
+		return shim.Error("failed to get amount" + err.Error())
 	}
 
 	goodsStr, err := stub.GetState(stockId)
@@ -389,9 +385,9 @@ func updateGoodsAmount(stub shim.ChaincodeStubInterface, args []string) peer.Res
 	}
 
 	if updateType == "0" {
-		stockNum -=  amount
+		stockNum -= amount
 	} else {
-		stockNum +=  amount
+		stockNum += amount
 	}
 
 	stockNumStr := strconv.Itoa(stockNum)
@@ -434,7 +430,7 @@ func updateGoodsStockFileNameOrPrice(stub shim.ChaincodeStubInterface, args []st
 	if len(args) != 3 {
 		return shim.Error("args length should be 3")
 	}
-	stockId, fileName, price := args[0], args[1], args[2];
+	stockId, fileName, price := args[0], args[1], args[2]
 	if stockId == "" {
 		return shim.Error("stockId is required")
 	}
@@ -479,7 +475,7 @@ func traceGoodsAndOrderByBatchNo(stub shim.ChaincodeStubInterface, args []string
 	if batchNo == "" {
 		return shim.Error("batchNo required")
 	}
-	goodsQuery := fmt.Sprintf("{\"selector\":{\"batchNo\":{\"$eq\": %s },\"sort\":[{\"storageTime\":\"desc\"}],\"use_index\":[\"_design/goodsBatchNoDoc\",\"goodsBatchNo\"]}", batchNo)
+	goodsQuery := fmt.Sprintf("{\"selector\":{\"batchNo\":{\"$eq\": \"%s\" }},\"sort\":[{\"storageTime\":\"desc\"}],\"use_index\":[\"_design/goodsStorageTimeDoc\",\"goodsStorageTime\"]}", batchNo)
 	resultsIterator, err := stub.GetQueryResult(goodsQuery)
 
 	var buffer bytes.Buffer
@@ -519,16 +515,15 @@ func traceGoodsAndOrderByBatchNo(stub shim.ChaincodeStubInterface, args []string
 }
 
 func addOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("addOrder"), []byte(args[0])}, stub.GetChannelID() )
+	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("addOrder"), []byte(args[0])}, stub.GetChannelID())
 	if res.Status != shim.OK {
 		return shim.Error("failed to invoke addOrder")
 	}
 	return shim.Success(res.Payload)
 }
 
-
 func updateOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("updateOrder"), []byte(args[0])}, stub.GetChannelID() )
+	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("updateOrder"), []byte(args[0])}, stub.GetChannelID())
 	if res.Status != shim.OK {
 		return shim.Error("failed to invoke addOrder")
 	}
@@ -556,7 +551,11 @@ func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorI
 	}
 	buffer.WriteString("],")
 	buffer.WriteString("\"bookmark\":")
-	buffer.WriteString(bookmark)
+	if bookmark == "" {
+		buffer.WriteString("\"\"")
+	} else {
+		buffer.WriteString(bookmark)
+	}
 	buffer.WriteString("}")
 
 	return &buffer, nil
@@ -598,7 +597,6 @@ func generateQueryString(equal map[string]string, regex map[string]string, sort 
 	}
 
 	query, err := json.Marshal(&queryMap)
-
 
 	if err != nil {
 		return "", err

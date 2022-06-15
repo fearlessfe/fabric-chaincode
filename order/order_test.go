@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 	"regexp"
 	"testing"
@@ -91,6 +92,9 @@ func TestGenerateQueryString(t *testing.T)  {
 	if res != expect {
 		t.Fatal()
 	}
+	batchNo := "2";
+	s :=fmt.Sprintf("{\"selector\":{\"batchNo\":{\"$eq\": \"%s\" },\"sort\":[{\"storageTime\":\"desc\"}],\"use_index\":[\"_design/goodsStorageTimeDoc\",\"goodsStorageTime\"]}", batchNo)
+	t.Log(s)
 }
 
 //func TestUnmarshal(t *testing.T)  {
