@@ -1,0 +1,8 @@
+{
+  "index": {
+    "fields": ["storageTime"]
+  },
+  "ddoc": "goodsStorageTimeDoc",
+  "name": "goodsStorageTime",
+  "type": "json"
+}

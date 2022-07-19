@@ -243,12 +243,16 @@ func queryGoodsDetailByMap(stub shim.ChaincodeStubInterface, args []string) peer
 		return shim.Error("shopId or kindId required")
 	}
 
-	equal := make(map[string]string)
+	equal := map[string]string{
+		"shopId": argStruct.ShopId,
+		"kindId": argStruct.KindId,
+	}
 	reg := make(map[string]string)
 	sort := map[string]string{
 		"storageTime": "desc",
 	}
-	index := []string{"_design/goodsShopIdKindIdDoc", "goodsShopIdKindId"}
+	index := []string{"_design/goodsShopIdDoc", "goodsShopId"}
+	// index := []string{"_design/goodsShopIdKindIdDoc", "goodsShopIdKindId"}
 
 	if argStruct.GsiStatus != "" {
 		equal["gsiStatus"] = argStruct.GsiStatus
@@ -320,7 +324,7 @@ func queryFriendGoodsListByMap(stub shim.ChaincodeStubInterface, args []string) 
 	queryMap := map[string]interface{}{
 		"sort": []map[string]string{{"storageTime": "desc"}},
 	}
-	queryMap["use_index"] = []string{"_design/goodsShopIdDoc", "goodsShopId"}
+	queryMap["use_index"] = []string{"_design/goodsStorageTimeDoc", "goodsStorageTime"}
 	queryMap["selector"] = selectMap
 
 	query, err := json.Marshal(&queryMap)
