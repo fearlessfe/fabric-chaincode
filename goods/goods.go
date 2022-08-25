@@ -33,6 +33,10 @@ type Goods struct {
 	SubmitTime  string `json:"submitTime"`  // 提交时间
 	GsiStatus   string `json:"gsiStatus"`   // 上架状态 0 上架， 1下架
 	QcStatus    string `json:"qcstatus"`    // 0 未检测，1 合格， 2 不合格 3 复检合格 4 复检不合格
+	Shop        string `json:"shop"`
+	Name        string `json:"name"`
+	MarketId    string `json:"marketId"`
+	IsPreSell   string `json:"isPreSell"`
 }
 
 type PersonalGoodsRes struct {
@@ -365,7 +369,8 @@ func updateGoodsAmount(stub shim.ChaincodeStubInterface, args []string) peer.Res
 	if updateType != "0" && updateType != "1" {
 		return shim.Error("updateType should be 0 or 1, get " + updateType)
 	}
-	amount, err := strconv.Atoi(amountStr)
+	// amount, err := strconv.Atoi(amountStr)
+	amount, err := strconv.ParseFloat(amountStr, 64)
 
 	if err != nil {
 		return shim.Error("failed to get amount" + err.Error())
@@ -383,7 +388,8 @@ func updateGoodsAmount(stub shim.ChaincodeStubInterface, args []string) peer.Res
 	if err != nil {
 		return shim.Error("failed to unmarshal goods" + err.Error())
 	}
-	stockNum, err := strconv.Atoi(goods.StockNum)
+	// stockNum, err := strconv.Atoi(goods.StockNum)
+	stockNum, err := strconv.ParseFloat(goods.StockNum, 64)
 	if err != nil {
 		return shim.Error(err.Error())
 	}
@@ -394,7 +400,8 @@ func updateGoodsAmount(stub shim.ChaincodeStubInterface, args []string) peer.Res
 		stockNum += amount
 	}
 
-	stockNumStr := strconv.Itoa(stockNum)
+	// stockNumStr := strconv.Itoa(stockNum)
+	stockNumStr := strconv.FormatFloat(stockNum, 'f', 3, 64)
 	goods.StockNum = stockNumStr
 
 	bytes, err := json.Marshal(&goods)
