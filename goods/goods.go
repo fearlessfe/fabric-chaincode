@@ -558,7 +558,7 @@ func constructQueryResponseFromIterator(resultsIterator shim.StateQueryIteratorI
 	if bookmark == "" {
 		buffer.WriteString("\"\"")
 	} else {
-		buffer.WriteString(bookmark)
+		buffer.WriteString(fmt.Sprintf("\"%s\"", bookmark))
 	}
 	buffer.WriteString("}")
 
