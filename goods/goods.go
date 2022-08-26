@@ -92,6 +92,8 @@ func (t GoodsContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 		return addOrder(stub, args)
 	case "updateOrder":
 		return updateOrder(stub, args)
+	case "queryOrder":
+		return queryOrder(stub, args)
 	default:
 		return shim.Error("unsupported method " + fn)
 	}
@@ -536,7 +538,15 @@ func addOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 func updateOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("updateOrder"), []byte(args[0])}, stub.GetChannelID())
 	if res.Status != shim.OK {
-		return shim.Error("failed to invoke addOrder")
+		return shim.Error("failed to invoke updateOrder")
+	}
+	return shim.Success(res.Payload)
+}
+
+func queryOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
+	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("queryOrder"), []byte(args[0])}, stub.GetChannelID())
+	if res.Status != shim.OK {
+		return shim.Error("failed to invoke queryOrder")
 	}
 	return shim.Success(res.Payload)
 }
