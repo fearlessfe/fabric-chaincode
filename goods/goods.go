@@ -517,7 +517,7 @@ func traceGoodsAndOrderByBatchNo(stub shim.ChaincodeStubInterface, args []string
 	orderRes := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("queryOrder"), []byte(batchNo)}, stub.GetChannelID())
 
 	if orderRes.Status != shim.OK {
-		return shim.Error("failed to invoke queryOrder method")
+		return shim.Error(orderRes.Message)
 	}
 
 	buffer.WriteString(string(orderRes.Payload))
@@ -530,7 +530,7 @@ func traceGoodsAndOrderByBatchNo(stub shim.ChaincodeStubInterface, args []string
 func addOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("addOrder"), []byte(args[0])}, stub.GetChannelID())
 	if res.Status != shim.OK {
-		return shim.Error("failed to invoke addOrder")
+		return shim.Error(res.Message)
 	}
 	return shim.Success(res.Payload)
 }
@@ -538,7 +538,7 @@ func addOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 func updateOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("updateOrder"), []byte(args[0])}, stub.GetChannelID())
 	if res.Status != shim.OK {
-		return shim.Error("failed to invoke updateOrder")
+		return shim.Error(res.Message)
 	}
 	return shim.Success(res.Payload)
 }
@@ -546,7 +546,7 @@ func updateOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response 
 func queryOrder(stub shim.ChaincodeStubInterface, args []string) peer.Response {
 	res := stub.InvokeChaincode(orderContractName, [][]byte{[]byte("queryOrder"), []byte(args[0])}, stub.GetChannelID())
 	if res.Status != shim.OK {
-		return shim.Error("failed to invoke queryOrder")
+		return shim.Error(res.Message)
 	}
 	return shim.Success(res.Payload)
 }

@@ -33,4 +33,4 @@ order 和 goods 涉及到 couchdb 的索引，需要将各自文件夹下的文�
 
 由于 goods 链码依赖 order 链码，所以 部署时需要先部署 order 链码，且链码标识为 order；然后在部署
  goods 链码。调用时，只需要调用 goods 链码，goods 链码中有 API 文档的所有方法，包括 order 相关
-的方法。
+的方法。goods和order链码需要部署在同一通道下。
